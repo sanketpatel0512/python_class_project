@@ -4,4 +4,3 @@ schldata = pd.read_csv("schoolzip.csv", usecols = ['dbn','school_name','boro','g
                                                     'college_career_rate','pct_stu_safe','Postcode'])
 schldata = schldata.rename(columns = {'pct_stu_enough_variety':'variety_rate','pct_stu_safe':'safety_rate'})
 schldata = schldata.fillna(schldata.mean())
-print(schldata)
