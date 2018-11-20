@@ -1,0 +1,8 @@
+
+import pandas as pd
+noisedata = pd.read_csv("311_Noise_in_NYC(marked).csv", usecols = ['Reason','Incident Zip','City',\
+                                                    'Borough','Resolution Action Date'])
+noisedata = noisedata.dropna()
+print(noisedata)
+a=noisedata.info()
+print(a)
