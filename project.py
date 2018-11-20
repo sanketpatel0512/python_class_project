@@ -8,6 +8,7 @@ schldata = schldata.fillna(schldata.mean())
 
 #Air Data Input
 airdata = pd.read_csv("Air_Quality.csv")
+airdata = airdata[airdata['geo_type_name']=='Borough']
 
 #Population Data Input
 popdata = pd.read_csv("Population.csv")
