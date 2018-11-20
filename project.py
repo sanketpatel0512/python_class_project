@@ -11,3 +11,11 @@ airdata = pd.read_csv("Air_Quality.csv")
 
 #Population Data Input
 popdata = pd.read_csv("Population.csv")
+
+#crimedata
+crimedata = pd.read_csv("NYPD_Complaint_Data_Historic.csv", usecols = ['CMPLNT_TO_Date','BORO_NM','LAW_CAT_CD','CMPLNT_FR_Date'])
+                                                    
+crimedata = crimedata.rename(columns = {'CMPLNT_TO_Date':'complaint_end',\
+                                        'CMPLNT_FR_Date':'complaint_start',\
+                                        'LAW_CAT_CD':'lawtype','BORO_NM':'Boro'})
+crimedata = crimedata.fillna(crimedata.mean())
