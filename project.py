@@ -24,3 +24,13 @@ crimedata = crimedata.rename(columns = {'CMPLNT_TO_Date':'complaint_end',\
                                         'CMPLNT_FR_Date':'complaint_start',\
                                         'LAW_CAT_CD':'lawtype','BORO_NM':'Boro'})
 crimedata = crimedata.fillna(crimedata.mean())
+
+#cleanlinessdata
+cleandata = pd.read_csv("Scorecard_Ratings.csv",usecols = ['Borough','District', 'Acceptable Streets %', 'Acceptable Sidewalks %'])
+
+cleandata = cleandata.rename(columns = {'Borough': 'Boro',\
+                                        'District': 'Dist',\
+                                        'Acceptable Streets %': 'clean%',\})
+cleandata = cleandata.fillna(cleandata.mean())
+
+
