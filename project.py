@@ -8,7 +8,11 @@ schldata = schldata.fillna(schldata.mean())
 
 #Air Data Input
 airdata = pd.read_csv("Air_Quality.csv")
+delcolumn = ['indicator_data_id','indicator_id','geo_entity_id']
+airdata = airdata.drop(delcolumn, axis = 1)
 airdata = airdata[airdata['geo_type_name']=='Borough']
+airdata['data_valuemessage'] = airdata['data_valuemessage'].apply(pd.to_numeric)
+airdata = airdata.groupby(['geo_entity_name','name','year_description']).mean().reset_index()
 
 #Population Data Input
 popdata = pd.read_csv("Population.csv")
