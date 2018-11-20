@@ -8,4 +8,6 @@ schldata = schldata.fillna(schldata.mean())
 
 #Air Data Input
 airdata = pd.read_csv("Air_Quality.csv")
-print(airdata)
+
+#Population Data Input
+popdata = pd.read_csv("Population.csv")
