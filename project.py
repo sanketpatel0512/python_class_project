@@ -38,3 +38,11 @@ cleandata = cleandata.fillna(cleandata.mean())
 value = pd.read_csv("PropertyValuation.csv", usecols = ['BBLE','B','BLDGCL','STORIES','FULLVAL','AVTOT','ZIP','YEAR'])
 value = value.rename(columns = {'BBLE':'ID','B':'Borough','BLDGCL':'Building_Class', 'STORIES':'#ofStories', 'FULLVAL':'Market_Value',\
 'AVTOT':'Actual_Total_Value'})
+
+# Noise Data
+noisedata = pd.read_csv("311_Noise_in_NYC(marked).csv", usecols = ['Reason','Incident Zip','City','Borough','Resolution Action Date'])
+noisedata = noisedata.dropna()
+noisedata['Resolution Action Date'] = pd.to_datetime(noisedata['Resolution Action Date'])
+noisedata['year'] = noisedata['Resolution Action Date'].dt.year
+noisedata=noisedata.groupby(['Borough','Incident Zip',"Reason",'year']).count().reset_index()
+print(noisedata)
