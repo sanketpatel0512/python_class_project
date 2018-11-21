@@ -26,12 +26,15 @@ crimedata = crimedata.rename(columns = {'CMPLNT_TO_Date':'complaint_end',\
 crimedata = crimedata.fillna(crimedata.mean())
 
 #cleanlinessdata
-cleandata = pd.read_csv("Scorecard_Ratings.csv",usecols = ['Borough','District', 'Acceptable Streets %', 'Acceptable Sidewalks %'])
+cleandata = pd.read_csv("Scorecard_Ratings.csv",usecols = ['Month', 'Borough', 'Acceptable Streets %', 'Acceptable Sidewalks %'])
 
 cleandata = cleandata.rename(columns = {'Borough': 'Boro',\
-                                        'District': 'Dist',\
-                                        'Acceptable Streets %': 'clean%',\})
+                                        'Acceptable Streets %': 'clean%'})
 cleandata = cleandata.fillna(cleandata.mean())
+cleandata['Month'] = pd.to_datetime(cleandata['Month'])
+cleandata['year'] = cleandata['Month'].dt.year
+cleandata = cleandata.groupby(['Boro','year']).mean()
+print(cleandata)
 
 
 # Property Valuation Data
