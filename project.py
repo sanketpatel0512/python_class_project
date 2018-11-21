@@ -34,3 +34,7 @@ cleandata = cleandata.rename(columns = {'Borough': 'Boro',\
 cleandata = cleandata.fillna(cleandata.mean())
 
 
+# Property Valuation Data
+value = pd.read_csv("PropertyValuation.csv", usecols = ['BBLE','B','BLDGCL','STORIES','FULLVAL','AVTOT','ZIP','YEAR'])
+value = value.rename(columns = {'BBLE':'ID','B':'Borough','BLDGCL':'Building_Class', 'STORIES':'#ofStories', 'FULLVAL':'Market_Value',\
+'AVTOT':'Actual_Total_Value'})
