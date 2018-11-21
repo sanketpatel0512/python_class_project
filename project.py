@@ -18,12 +18,17 @@ airdata = airdata.groupby(['geo_entity_name','name','year_description']).mean().
 popdata = pd.read_csv("Population.csv")
 
 #crimedata
-crimedata = pd.read_csv("NYPD_Complaint_Data_Historic.csv", usecols = ['CMPLNT_TO_Date','BORO_NM','LAW_CAT_CD','CMPLNT_FR_Date'])
-                                                    
-crimedata = crimedata.rename(columns = {'CMPLNT_TO_Date':'complaint_end',\
-                                        'CMPLNT_FR_Date':'complaint_start',\
-                                        'LAW_CAT_CD':'lawtype','BORO_NM':'Boro'})
-crimedata = crimedata.fillna(crimedata.mean())
+import pandas as pd
+crimedata = pd.read_csv("NYPD_Complaint_Data_Historic with attributes.csv", usecols = ['CMPLNT_FR_Date','BORO_NM','OFNS_DESC',"LAW_CAT_CD","CMPLNT_NUM"])
+crimedata = crimedata.rename(columns = {'CMPLNT_FR_Date':'Date',\
+                                        'OFNS_DESC':'Offense',\
+                                        'LAW_CAT_CD':'Lawtype','BORO_NM':'Borough'})
+crimedata = crimedata.dropna()
+#crimedata= = crimedata["COMPLNT_FR_Date"]
+crimedata['Date'] = pd.to_datetime(crimedata['Date'])
+crimedata['year'] = crimedata['Date'].dt.year
+crimedata=crimedata.groupby(['Borough','Offense',"Lawtype"]).count().reset_index()
+print(crimedata)
 
 #cleanlinessdata
 cleandata = pd.read_csv("Scorecard_Ratings.csv",usecols = ['Month', 'Borough', 'Acceptable Streets %', 'Acceptable Sidewalks %'])
@@ -36,6 +41,14 @@ cleandata['year'] = cleandata['Month'].dt.year
 cleandata = cleandata.groupby(['Boro','year']).mean()
 print(cleandata)
 
+#noisedata
+import pandas as pd
+noisedata = pd.read_csv("311_Noise_in_NYC(marked).csv", usecols = ['Reason','Incident Zip','City','Borough','Resolution Action Date'])
+noisedata = noisedata.dropna()
+noisedata['Resolution Action Date'] = pd.to_datetime(noisedata['Resolution Action Date'])
+noisedata['year'] = noisedata['Resolution Action Date'].dt.year
+noisedata=noisedata.groupby(['Borough','Incident Zip',"Reason",'year']).count().reset_index()
+print(noisedata)
 
 # Property Valuation Data
 value = pd.read_csv("PropertyValuation.csv", usecols = ['BBLE','B','BLDGCL','STORIES','FULLVAL','AVTOT','ZIP','YEAR'])
