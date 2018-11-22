@@ -11,14 +11,17 @@ schldata = schldata.groupby(['zipcode']).mean().reset_index()
 airdata = pd.read_csv("Air_Quality.csv")
 delcolumn = ['indicator_data_id','indicator_id','geo_entity_id']
 airdata = airdata.rename(columns = {'geo_entity_name':'boro'})
+airdata['boro'] = airdata['boro'].str.upper()
 airdata = airdata.drop(delcolumn, axis = 1)
 airdata = airdata[airdata['geo_type_name']=='Borough']
 airdata['data_valuemessage'] = airdata['data_valuemessage'].apply(pd.to_numeric)
 airdata = airdata.groupby(['boro','name','year_description']).mean().reset_index()
+#print(airdata)
 
 #Age Data
 popdata = pd.read_csv("Population.csv", usecols = ['Borough','Age','2015','2020'])
 popdata = popdata.rename(columns = {'Borough':'boro'})
+popdata['boro'] = popdata['boro'].str.upper()
 borolist = list(popdata['boro'].unique())
 totallist = popdata[popdata['Age'] == 'Total']
 
@@ -28,7 +31,8 @@ for b in borolist:
     pop['Current %'] = 100*(pop['2015']/(float(totallist['2015'].where(totallist['boro'] == b).dropna().values)))
     pop['Future %'] = 100*(pop['2020']/(float(totallist['2020'].where(totallist['boro'] == b).dropna().values)))
     agedata = agedata.append(pop,ignore_index = True)
-#Connect Air and Age
+
+#Combine Air and Age
 air_age = airdata.merge(agedata, on = 'boro')
 print(air_age)
 
