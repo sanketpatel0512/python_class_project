@@ -1,32 +1,37 @@
 import pandas as pd
 #School Data Input
-schldata = pd.read_csv("schoolzip.csv", usecols = ['dbn','school_name','boro','graduation_rate',\
+schldata = pd.read_csv("schoolzip.csv", usecols = ['dbn','school_name','graduation_rate',\
                                                     'attendance_rate','pct_stu_enough_variety',\
                                                     'college_career_rate','pct_stu_safe','Postcode'])
-schldata = schldata.rename(columns = {'pct_stu_enough_variety':'variety_rate','pct_stu_safe':'safety_rate'})
+schldata = schldata.rename(columns = {'Postcode':'zipcode','pct_stu_enough_variety':'variety_rate','pct_stu_safe':'safety_rate'})
 schldata = schldata.fillna(schldata.mean())
-schldata = schldata.groupby(['boro','Postcode']).mean().reset_index()
+schldata = schldata.groupby(['zipcode']).mean().reset_index()
 
 #Air Data Input
 airdata = pd.read_csv("Air_Quality.csv")
 delcolumn = ['indicator_data_id','indicator_id','geo_entity_id']
+airdata = airdata.rename(columns = {'geo_entity_name':'boro'})
 airdata = airdata.drop(delcolumn, axis = 1)
 airdata = airdata[airdata['geo_type_name']=='Borough']
 airdata['data_valuemessage'] = airdata['data_valuemessage'].apply(pd.to_numeric)
-airdata = airdata.groupby(['geo_entity_name','name','year_description']).mean().reset_index()
+airdata = airdata.groupby(['boro','name','year_description']).mean().reset_index()
 
 #Age Data
 popdata = pd.read_csv("Population.csv", usecols = ['Borough','Age','2015','2020'])
-borolist = list(popdata['Borough'].unique())
+popdata = popdata.rename(columns = {'Borough':'boro'})
+borolist = list(popdata['boro'].unique())
 totallist = popdata[popdata['Age'] == 'Total']
-#print(float(totallist['2015'].where(totallist['Borough'] == 'Bronx').dropna().values))
+
 agedata = pd.DataFrame()
 for b in borolist:
-    pop= popdata[popdata['Borough'] == b]
-    pop['Current %'] = 100*(pop['2015']/(float(totallist['2015'].where(totallist['Borough'] == b).dropna().values)))
-    pop['Future %'] = 100*(pop['2020']/(float(totallist['2020'].where(totallist['Borough'] == b).dropna().values)))
+    pop= popdata[popdata['boro'] == b]
+    pop['Current %'] = 100*(pop['2015']/(float(totallist['2015'].where(totallist['boro'] == b).dropna().values)))
+    pop['Future %'] = 100*(pop['2020']/(float(totallist['2020'].where(totallist['boro'] == b).dropna().values)))
     agedata = agedata.append(pop,ignore_index = True)
-print(agedata)
+#Connect Air and Age
+air_age = airdata.merge(agedata, on = 'boro')
+print(air_age)
+
 
 #crimedata
 crimedata = pd.read_csv("NYPD_Complaint_Data_Historic with attributes.csv", usecols = ['CMPLNT_FR_Date','BORO_NM','OFNS_DESC',"LAW_CAT_CD","CMPLNT_NUM"])
