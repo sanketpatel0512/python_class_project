@@ -14,8 +14,18 @@ airdata = airdata[airdata['geo_type_name']=='Borough']
 airdata['data_valuemessage'] = airdata['data_valuemessage'].apply(pd.to_numeric)
 airdata = airdata.groupby(['geo_entity_name','name','year_description']).mean().reset_index()
 
-#Population Data Input
-popdata = pd.read_csv("Population.csv")
+#Age Data
+popdata = pd.read_csv("Population.csv", usecols = ['Borough','Age','2015','2020'])
+borolist = list(popdata['Borough'].unique())
+totallist = popdata[popdata['Age'] == 'Total']
+#print(float(totallist['2015'].where(totallist['Borough'] == 'Bronx').dropna().values))
+agedata = pd.DataFrame()
+for b in borolist:
+    pop= popdata[popdata['Borough'] == b]
+    pop['Current %'] = 100*(pop['2015']/(float(totallist['2015'].where(totallist['Borough'] == b).dropna().values)))
+    pop['Future %'] = 100*(pop['2020']/(float(totallist['2020'].where(totallist['Borough'] == b).dropna().values)))
+    agedata = agedata.append(pop,ignore_index = True)
+print(agedata)
 
 #crimedata
 crimedata = pd.read_csv("NYPD_Complaint_Data_Historic with attributes.csv", usecols = ['CMPLNT_FR_Date','BORO_NM','OFNS_DESC',"LAW_CAT_CD","CMPLNT_NUM"])
