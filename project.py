@@ -40,10 +40,51 @@ cleandata['year'] = cleandata['Month'].dt.year
 cleandata = cleandata.groupby(['Boro','year']).mean()
 print(cleandata)
 
-# Property Valuation Data
-value = pd.read_csv("PropertyValuation.csv", usecols = ['BBLE','B','BLDGCL','STORIES','FULLVAL','AVTOT','ZIP','YEAR'])
-value = value.rename(columns = {'BBLE':'ID','B':'Borough','BLDGCL':'Building_Class', 'STORIES':'#ofStories', 'FULLVAL':'Market_Value',\
-'AVTOT':'Actual_Total_Value'})
+# # Property Sale Price Data
+# Manhattan 1
+m = pd.read_csv("rollingsales_manhattan.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
+m = m.dropna() # drop any row if one of the column is empty
+m = m[m['SALE PRICE']!= 0]
+m = m[m['GROSS SQUARE FEET']!= 0]
+m['Price/sqft'] = m['SALE PRICE']/m['GROSS SQUARE FEET']
+m = m.groupby(['BOROUGH','ZIP CODE','BUILDING CLASS AT TIME OF SALE'])['Price/sqft'].mean()
+print(m)
+
+# Bronx 2
+bx = pd.read_csv("rollingsales_bronx.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
+bx = bx.dropna() # drop any row if one of the column is empty
+bx = bx[bx['SALE PRICE']!= 0]
+bx = bx[bx['GROSS SQUARE FEET']!= 0]
+bx['Price/sqft'] = bx['SALE PRICE']/bx['GROSS SQUARE FEET']
+bx = bx.groupby(['BOROUGH','ZIP CODE','BUILDING CLASS AT TIME OF SALE'])['Price/sqft'].mean()
+print(bx)
+
+# Brooklyn 3
+bl = pd.read_csv("rollingsales_brooklyn.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
+bl = bl.dropna() # drop any row if one of the column is empty
+bl = bl[bl['SALE PRICE']!= 0]
+bl = bl[bl['GROSS SQUARE FEET']!= 0]
+bl['Price/sqft'] = bl['SALE PRICE']/bl['GROSS SQUARE FEET']
+bl = bl.groupby(['BOROUGH','ZIP CODE','BUILDING CLASS AT TIME OF SALE'])['Price/sqft'].mean()
+print(bl)
+
+# Queens 4
+q = pd.read_csv("rollingsales_queens.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
+q = q.dropna() # drop any row if one of the column is empty
+q = q[q['SALE PRICE']!= 0]
+q = q[q['GROSS SQUARE FEET']!= 0]
+q['Price/sqft'] = q['SALE PRICE']/q['GROSS SQUARE FEET']
+q = q.groupby(['BOROUGH','ZIP CODE','BUILDING CLASS AT TIME OF SALE'])['Price/sqft'].mean()
+print(q)
+
+# Staten Island 5
+s = pd.read_csv("rollingsales_statenisland.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
+s = s.dropna() # drop any row if one of the column is empty
+s = s[s['SALE PRICE']!= 0]
+s = s[s['GROSS SQUARE FEET']!= 0]
+s['Price/sqft'] = s['SALE PRICE']/s['GROSS SQUARE FEET']
+s = s.groupby(['BOROUGH','ZIP CODE','BUILDING CLASS AT TIME OF SALE'])['Price/sqft'].mean()
+print(s)
 
 # Noise Data
 noisedata = pd.read_csv("311_Noise_in_NYC(marked).csv", usecols = ['Reason','Incident Zip','City','Borough','Resolution Action Date'])
