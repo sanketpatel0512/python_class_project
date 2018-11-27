@@ -1,7 +1,7 @@
 import pandas as pd
 
 #noise data
-noisedata = pd.read_csv("311_Noise_in_NYC(marked).csv", usecols = ['Reason','Incident Zip','Borough','Resolution Action Date'])
+noisedata = pd.read_csv("NOISE.csv", usecols = ['Reason','Incident Zip','Borough','Resolution Action Date'])
 noisedata = noisedata.dropna()
 noisedata = noisedata.rename(columns = {'Resolution Action Date': 'Date','Incident Zip':'zipcode','Borough':'boro','Unique Key':'key'})
 noisedata['Date'] = pd.to_datetime(noisedata['Date'])
@@ -10,7 +10,7 @@ noisedata=noisedata[noisedata["year"]<=2018]
 noisedata=noisedata.groupby(['boro','zipcode',"Reason",'year']).count().reset_index()
 
 #Air Data Input
-cleandata = pd.read_csv("Scorecard_Ratings.csv",usecols = ['Month', 'Borough', 'Acceptable Streets %', 'Acceptable Sidewalks %'])
+cleandata = pd.read_csv("Cleanliness.csv",usecols = ['Month', 'Borough', 'Acceptable Streets %', 'Acceptable Sidewalks %'])
 
 cleandata = cleandata.rename(columns = {'Acceptable Streets %': 'clean%','Borough':'boro'})
 cleandata['boro']=cleandata['boro'].str.upper()
