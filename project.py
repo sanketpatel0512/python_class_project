@@ -1,6 +1,6 @@
 import pandas as pd
 #School Data Input
-schldata = pd.read_csv("schoolzip.csv", usecols = ['dbn','school_name','graduation_rate',\
+schldata = pd.read_csv("school.csv", usecols = ['dbn','school_name','graduation_rate',\
                                                     'attendance_rate','pct_stu_enough_variety',\
                                                     'college_career_rate','pct_stu_safe','Postcode'])
 schldata = schldata.rename(columns = {'Postcode':'zipcode','pct_stu_enough_variety':'variety_rate','pct_stu_safe':'safety_rate'})
@@ -8,7 +8,7 @@ schldata = schldata.fillna(schldata.mean())
 schldata = schldata.groupby(['zipcode']).mean().reset_index()
 
 #Air Data Input
-airdata = pd.read_csv("Air_Quality.csv")
+airdata = pd.read_csv("Air.csv")
 delcolumn = ['indicator_data_id','indicator_id','geo_entity_id']
 airdata = airdata.rename(columns = {'geo_entity_name':'boro'})
 airdata['boro'] = airdata['boro'].str.upper()
@@ -19,7 +19,7 @@ airdata = airdata.groupby(['boro','name','year_description']).mean().reset_index
 #print(airdata)
 
 #Age Data
-popdata = pd.read_csv("Population.csv", usecols = ['Borough','Age','2015','2020'])
+popdata = pd.read_csv("Age.csv", usecols = ['Borough','Age','2015','2020'])
 popdata = popdata.rename(columns = {'Borough':'boro'})
 popdata['boro'] = popdata['boro'].str.upper()
 borolist = list(popdata['boro'].unique())
@@ -38,7 +38,7 @@ print(air_age)
 
 
 #crimedata
-crimedata = pd.read_csv("NYPD_Complaint_Data_Historic with attributes.csv", usecols = ['CMPLNT_FR_Date','BORO_NM','OFNS_DESC',"LAW_CAT_CD","CMPLNT_NUM"])
+crimedata = pd.read_csv("Crime.csv", usecols = ['CMPLNT_FR_Date','BORO_NM','OFNS_DESC',"LAW_CAT_CD","CMPLNT_NUM"])
 crimedata = crimedata.rename(columns = {'CMPLNT_FR_Date':'Date',\
                                         'OFNS_DESC':'Offense',\
                                         'LAW_CAT_CD':'Lawtype','BORO_NM':'Borough'})
@@ -50,7 +50,7 @@ crimedata=crimedata.groupby(['Borough','Offense',"Lawtype"]).count().reset_index
 print(crimedata)
 
 #cleanlinessdata
-cleandata = pd.read_csv("Scorecard_Ratings.csv",usecols = ['Month', 'Borough', 'Acceptable Streets %', 'Acceptable Sidewalks %'])
+cleandata = pd.read_csv("Cleanliness.csv",usecols = ['Month', 'Borough', 'Acceptable Streets %', 'Acceptable Sidewalks %'])
 
 cleandata = cleandata.rename(columns = {'Borough': 'Boro',\
                                         'Acceptable Streets %': 'clean%'})
@@ -64,7 +64,7 @@ print(cleandata)
 
 pricedata = pd.DataFrame()
 
-m = pd.read_csv("rollingsales_manhattan.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
+m = pd.read_csv("salesprice_manhattan.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
 m = m.dropna() # drop any row if one of the column is empty
 m = m[m['SALE PRICE']!= 0]
 m = m[m['GROSS SQUARE FEET']!= 0]
@@ -72,7 +72,7 @@ m['Price/sqft'] = m['SALE PRICE']/m['GROSS SQUARE FEET']
 m = m.groupby(['BOROUGH','ZIP CODE','BUILDING CLASS AT TIME OF SALE'])['Price/sqft'].mean().reset_index()
 pricedata = pricedata.append(m)
 
-bx = pd.read_csv("rollingsales_bronx.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
+bx = pd.read_csv("salesprice_bronx.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
 bx = bx.dropna() # drop any row if one of the column is empty
 bx = bx[bx['SALE PRICE']!= 0]
 bx = bx[bx['GROSS SQUARE FEET']!= 0]
@@ -80,7 +80,7 @@ bx['Price/sqft'] = bx['SALE PRICE']/bx['GROSS SQUARE FEET']
 bx = bx.groupby(['BOROUGH','ZIP CODE','BUILDING CLASS AT TIME OF SALE'])['Price/sqft'].mean().reset_index()
 pricedata = pricedata.append(bx)
 
-bl = pd.read_csv("rollingsales_brooklyn.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
+bl = pd.read_csv("salesprice_brooklyn.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
 bl = bl.dropna() # drop any row if one of the column is empty
 bl = bl[bl['SALE PRICE']!= 0]
 bl = bl[bl['GROSS SQUARE FEET']!= 0]
@@ -88,7 +88,7 @@ bl['Price/sqft'] = bl['SALE PRICE']/bl['GROSS SQUARE FEET']
 bl = bl.groupby(['BOROUGH','ZIP CODE','BUILDING CLASS AT TIME OF SALE'])['Price/sqft'].mean().reset_index()
 pricedata = pricedata.append(bl)
 
-q = pd.read_csv("rollingsales_queens.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
+q = pd.read_csv("salesprice_queens.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
 q = q.dropna() # drop any row if one of the column is empty
 q = q[q['SALE PRICE']!= 0]
 q = q[q['GROSS SQUARE FEET']!= 0]
@@ -96,7 +96,7 @@ q['Price/sqft'] = q['SALE PRICE']/q['GROSS SQUARE FEET']
 q = q.groupby(['BOROUGH','ZIP CODE','BUILDING CLASS AT TIME OF SALE'])['Price/sqft'].mean().reset_index()
 pricedata = pricedata.append(q)
 
-s = pd.read_csv("rollingsales_statenisland.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
+s = pd.read_csv("salesprice_statenisland.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
 s = s.dropna() # drop any row if one of the column is empty
 s = s[s['SALE PRICE']!= 0]
 s = s[s['GROSS SQUARE FEET']!= 0]
@@ -107,7 +107,7 @@ pricedata = pricedata.append(s)
 print(pricedata)
 
 # Noise Data
-noisedata = pd.read_csv("311_Noise_in_NYC(marked).csv", usecols = ['Reason','Incident Zip','City','Borough','Resolution Action Date'])
+noisedata = pd.read_csv("Noise.csv", usecols = ['Reason','Incident Zip','City','Borough','Resolution Action Date'])
 noisedata = noisedata.dropna()
 noisedata['Resolution Action Date'] = pd.to_datetime(noisedata['Resolution Action Date'])
 noisedata['year'] = noisedata['Resolution Action Date'].dt.year
