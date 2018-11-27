@@ -1,7 +1,7 @@
 import pandas as pd
 
 #noise data
-noisedata = pd.read_csv("NOISE.csv", usecols = ['Reason','Incident Zip','Borough','Resolution Action Date'])
+noisedata = pd.read_csv("Noise.csv", usecols = ['Reason','Incident Zip','Borough','Resolution Action Date'])
 noisedata = noisedata.dropna()
 noisedata = noisedata.rename(columns = {'Resolution Action Date': 'Date','Incident Zip':'zipcode','Borough':'boro','Unique Key':'key'})
 noisedata['Date'] = pd.to_datetime(noisedata['Date'])
