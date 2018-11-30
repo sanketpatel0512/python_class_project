@@ -6,20 +6,23 @@ schldata = pd.read_csv("school.csv", usecols = ['dbn','school_name','graduation_
 schldata = schldata.rename(columns = {'Postcode':'zipcode','pct_stu_enough_variety':'variety_rate','pct_stu_safe':'safety_rate'})
 schldata = schldata.fillna(schldata.mean())
 schldata = schldata.groupby(['zipcode']).mean().reset_index()
+#print(schldata['boro'].unique())
+
 
 #Air Data Input
-airdata = pd.read_csv("Air.csv")
+airdata = pd.read_csv("air.csv")
 delcolumn = ['indicator_data_id','indicator_id','geo_entity_id']
-airdata = airdata.rename(columns = {'geo_entity_name':'boro'})
+airdata = airdata.rename(columns = {'geo_entity_name':'boro','year_description':'year'})
 airdata['boro'] = airdata['boro'].str.upper()
 airdata = airdata.drop(delcolumn, axis = 1)
 airdata = airdata[airdata['geo_type_name']=='Borough']
 airdata['data_valuemessage'] = airdata['data_valuemessage'].apply(pd.to_numeric)
-airdata = airdata.groupby(['boro','name','year_description']).mean().reset_index()
-#print(airdata)
+#airdata = airdata[airdata['year'] == '2013']
+airdata = airdata.groupby(['boro','name','year']).mean().reset_index()
+
 
 #Age Data
-popdata = pd.read_csv("Age.csv", usecols = ['Borough','Age','2015','2020'])
+popdata = pd.read_csv("age.csv", usecols = ['Borough','Age','2015','2020'])
 popdata = popdata.rename(columns = {'Borough':'boro'})
 popdata['boro'] = popdata['boro'].str.upper()
 borolist = list(popdata['boro'].unique())
@@ -34,82 +37,39 @@ for b in borolist:
 
 #Combine Air and Age
 air_age = airdata.merge(agedata, on = 'boro')
-print(air_age)
+#print(air_age)
+yearlist = ['2018','2017','2016','2015']
 
 
-#crimedata
-crimedata = pd.read_csv("Crime.csv", usecols = ['CMPLNT_FR_Date','BORO_NM','OFNS_DESC',"LAW_CAT_CD","CMPLNT_NUM"])
-crimedata = crimedata.rename(columns = {'CMPLNT_FR_Date':'Date',\
-                                        'OFNS_DESC':'Offense',\
-                                        'LAW_CAT_CD':'Lawtype','BORO_NM':'Borough'})
-crimedata = crimedata.dropna()
-#crimedata= = crimedata["COMPLNT_FR_Date"]
-crimedata['Date'] = pd.to_datetime(crimedata['Date'])
-crimedata['year'] = crimedata['Date'].dt.year
-crimedata=crimedata.groupby(['Borough','Offense',"Lawtype"]).count().reset_index()
-print(crimedata)
-
-#cleanlinessdata
-cleandata = pd.read_csv("Cleanliness.csv",usecols = ['Month', 'Borough', 'Acceptable Streets %', 'Acceptable Sidewalks %'])
-
-cleandata = cleandata.rename(columns = {'Borough': 'Boro',\
-                                        'Acceptable Streets %': 'clean%'})
-cleandata = cleandata.fillna(cleandata.mean())
-cleandata['Month'] = pd.to_datetime(cleandata['Month'])
-cleandata['year'] = cleandata['Month'].dt.year
-cleandata = cleandata.groupby(['Boro','year']).mean()
-print(cleandata)
-
-# Sale Price Data
-
-pricedata = pd.DataFrame()
-
-m = pd.read_csv("salesprice_manhattan.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
-m = m.dropna() # drop any row if one of the column is empty
-m = m[m['SALE PRICE']!= 0]
-m = m[m['GROSS SQUARE FEET']!= 0]
-m['Price/sqft'] = m['SALE PRICE']/m['GROSS SQUARE FEET']
-m = m.groupby(['BOROUGH','ZIP CODE','BUILDING CLASS AT TIME OF SALE'])['Price/sqft'].mean().reset_index()
-pricedata = pricedata.append(m)
-
-bx = pd.read_csv("salesprice_bronx.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
-bx = bx.dropna() # drop any row if one of the column is empty
-bx = bx[bx['SALE PRICE']!= 0]
-bx = bx[bx['GROSS SQUARE FEET']!= 0]
-bx['Price/sqft'] = bx['SALE PRICE']/bx['GROSS SQUARE FEET']
-bx = bx.groupby(['BOROUGH','ZIP CODE','BUILDING CLASS AT TIME OF SALE'])['Price/sqft'].mean().reset_index()
-pricedata = pricedata.append(bx)
-
-bl = pd.read_csv("salesprice_brooklyn.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
-bl = bl.dropna() # drop any row if one of the column is empty
-bl = bl[bl['SALE PRICE']!= 0]
-bl = bl[bl['GROSS SQUARE FEET']!= 0]
-bl['Price/sqft'] = bl['SALE PRICE']/bl['GROSS SQUARE FEET']
-bl = bl.groupby(['BOROUGH','ZIP CODE','BUILDING CLASS AT TIME OF SALE'])['Price/sqft'].mean().reset_index()
-pricedata = pricedata.append(bl)
-
-q = pd.read_csv("salesprice_queens.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
-q = q.dropna() # drop any row if one of the column is empty
-q = q[q['SALE PRICE']!= 0]
-q = q[q['GROSS SQUARE FEET']!= 0]
-q['Price/sqft'] = q['SALE PRICE']/q['GROSS SQUARE FEET']
-q = q.groupby(['BOROUGH','ZIP CODE','BUILDING CLASS AT TIME OF SALE'])['Price/sqft'].mean().reset_index()
-pricedata = pricedata.append(q)
-
-s = pd.read_csv("salesprice_statenisland.csv", usecols = ['BOROUGH', 'ZIP CODE','GROSS SQUARE FEET','BUILDING CLASS AT TIME OF SALE','SALE PRICE'])
-s = s.dropna() # drop any row if one of the column is empty
-s = s[s['SALE PRICE']!= 0]
-s = s[s['GROSS SQUARE FEET']!= 0]
-s['Price/sqft'] = s['SALE PRICE']/s['GROSS SQUARE FEET']
-s = s.groupby(['BOROUGH','ZIP CODE','BUILDING CLASS AT TIME OF SALE'])['Price/sqft'].mean().reset_index()
-pricedata = pricedata.append(s)
-
-print(pricedata)
-
-# Noise Data
-noisedata = pd.read_csv("Noise.csv", usecols = ['Reason','Incident Zip','City','Borough','Resolution Action Date'])
+#noise data
+noisedata = pd.read_csv("noise.csv", usecols = ['Reason','Incident Zip','Borough','Created Date'])
 noisedata = noisedata.dropna()
-noisedata['Resolution Action Date'] = pd.to_datetime(noisedata['Resolution Action Date'])
-noisedata['year'] = noisedata['Resolution Action Date'].dt.year
-noisedata=noisedata.groupby(['Borough','Incident Zip',"Reason",'year']).count().reset_index()
-print(noisedata)
+noisedata = noisedata.rename(columns = {'Created Date': 'Date','Incident Zip':'zipcode','Borough':'boro','Unique Key':'key'})
+noisedata = noisedata[noisedata['Date'].str.contains('2015')]
+#noisedata['Date'] = pd.to_datetime(noisedata['Date'])
+#noisedata['noise_year'] = noisedata['Date'].dt.year
+#noisedata=noisedata[noisedata["noise_year"]==2015]
+#noisedata.drop(['noise_year'],axis = 1)
+noisedata=noisedata.groupby(['boro','zipcode',"Reason"]).count().reset_index()
+#print(noisedata)
+
+#clean Data Input
+cleandata = pd.read_csv("cleanliness.csv",usecols = ['Month', 'Borough', 'Acceptable Streets %', 'Acceptable Sidewalks %'])
+
+cleandata = cleandata.rename(columns = {'Acceptable Streets %': 'clean%','Borough':'boro'})
+cleandata['boro']=cleandata['boro'].str.upper()
+cleandata = cleandata.fillna(cleandata.mean())
+cleandata = cleandata[cleandata['Month'].str.contains('2015')]
+#cleandata['Month'] = pd.to_datetime(cleandata['Month'])
+#cleandata['clean_year'] = cleandata['Month'].dt.year
+#cleandata=cleandata[cleandata["clean_year"]==2015]
+cleandata = cleandata.groupby(['boro']).mean().reset_index()
+
+
+#Master Data
+nc=noisedata.merge(cleandata,on="boro")
+ncaa = nc.merge(air_age,on = "boro")
+#ncaap = ncaa.merge(pricedata, on = "boro")
+masterData = ncaa.merge(schldata,on = "zipcode")
+
+print(masterData)
