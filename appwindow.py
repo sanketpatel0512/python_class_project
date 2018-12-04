@@ -80,7 +80,7 @@ def Reg():
 
     
 master = tk.Tk(className='NYC Borough Price Predictor')
-master.geometry("1000x1000")
+master.geometry("900x650")
 yearlist = [2013,2014]
 proplist = ['Residential','Commercial','Industrial','Civic Use','Mixed Use']
 
